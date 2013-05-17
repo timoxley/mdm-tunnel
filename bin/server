@@ -21,11 +21,13 @@ var appServer = net.createServer(function(socket) {
   }
 
   var parser = httppp(function(info) {
-    var host = (info[2].host && info[2].host.length) ? info[2].host[0] : null;
-    // remove port from host header
-    if (host) {
-      host = host.split(":").shift();
+    var host = (info[2].host && info[2].host.length) ? info[2].host[0] : null
+    if (!host) {
+      log('could not parse host', info[2]);
+      socket.end()
+      return
     }
+    host = host.split(":").shift() // remove port from host header
     var service = host.split('.')
     log('requesting service', service[0])
     parser.pipe(mx.createStream({
