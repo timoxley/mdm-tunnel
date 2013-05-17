@@ -1,0 +1,28 @@
+{
+  "name": "mdm-tunnel",
+  "version": "0.0.0",
+  "description": "ERROR: No README.md file found!",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": "",
+  "author": "",
+  "license": "BSD",
+  "dependencies": {
+    "through": "~2.3.4",
+    "mux-demux": "~3.6.3",
+    "stream-combiner": "0.0.2",
+    "msgpack-stream": "0.0.3",
+    "httppp": "~0.1.2",
+    "debug": "~0.7.2"
+  },
+  "bin": {
+    "client": "./bin/client",
+    "server": "./bin/server"
+  },
+  "devDependencies": {
+    "ecstatic": "~0.4.2",
+    "shoe": "0.0.10"
+  }
+}

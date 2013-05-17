@@ -1,0 +1,58 @@
+#!/usr/local/bin/env node
+
+var net = require('net')
+var MuxDemux = require('mux-demux')
+var combine = require('stream-combiner')
+var ms = require('msgpack-stream')
+var httppp = require('httppp')
+var log = require('debug')('server')
+var program = require('commander')
+
+program
+.version(require('../package.json').version)
+.option('-p, --port [port]', 'Port to listen for external connections on [port]', 8000)
+.parse(process.argv)
+
+var appServer = net.createServer(function(socket) {
+  log('new connection')
+  if (!mx) {
+    log('Client not connected.')
+    return socket.end()
+  }
+
+  var parser = httppp(function(info) {
+    var host = (info[2].host && info[2].host.length) ? info[2].host[0] : null;
+    // remove port from host header
+    if (host) {
+      host = host.split(":").shift();
+    }
+    var service = host.split('.')
+    log('requesting service', service[0])
+    parser.pipe(mx.createStream({
+      service: service[0]
+    })).pipe(socket);
+  })
+  socket.pipe(parser)
+})
+
+appServer.listen(program.port, function() {
+  log('app server listening on', program.port)
+})
+
+var mx
+var proxyServer = net.createServer(function(sock) {
+  log('client connected')
+  mx = MuxDemux({
+    wrapper: function (stream) {
+      return combine(ms.createDecodeStream(), stream, ms.createEncodeStream())
+    }
+  })
+  mx.pipe(sock).pipe(mx)
+  sock.on('end', function() {
+    log('client disconnected')
+  })
+})
+
+proxyServer.listen(8001, function() {
+  log('proxy server listening on', 8001)
+})

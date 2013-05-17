@@ -1,0 +1,44 @@
+#!/usr/local/bin/env node
+
+var net = require('net')
+var MuxDemux = require('mux-demux')
+var combine = require('stream-combiner')
+var ms = require('msgpack-stream')
+var program = require('commander')
+var debug = require('debug')
+var log = debug('client')
+
+program
+.version(require('../package.json').version)
+.option('-c, --config [file]', 'Config file to load [file]', '../config.json')
+.parse(process.argv)
+
+var mx = MuxDemux({
+  wrapper: function (stream) {
+    return combine(ms.createDecodeStream(), stream, ms.createEncodeStream())
+  }
+})
+
+var services = require(program.config)
+mx.pipe(net.connect({port: 8001})).pipe(mx)
+
+mx.on('connection', function(req) {
+  log('new connection')
+  if (!req.meta.service) {
+    log('no service specified')
+    return req.end()
+  }
+  if (!services[req.meta.service]) {
+    log('service not found', req.meta.service)
+    return req.end()
+  }
+  var service = req.meta.service
+  var port = services[req.meta.service]
+  log('service request', service)
+  var socket = net.connect({port: port})
+  socket.on('error', function(error) {
+    log('socket error', service, port, error)
+    req.end()
+  })
+  req.pipe(socket).pipe(req)
+})
