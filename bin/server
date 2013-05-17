@@ -53,18 +53,21 @@ var proxyServer = net.createServer(function(sock) {
       return combine(ms.createDecodeStream(), stream, ms.createEncodeStream())
     }
   })
+
   // auth
+  var id
   mx.on('connection', function(stream) {
     if (!stream.meta.auth) return
     var auth = stream.meta.auth
     log('client identified', auth.id)
     clients[auth.id] = mx
+    id = auth.id
     stream.end()
   })
   sock.pipe(mx).pipe(sock)
   sock.on('end', function() {
     log('client disconnected', id)
-    delete clients[id]
+    id && delete clients[id]
   })
 })
 

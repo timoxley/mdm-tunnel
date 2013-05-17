@@ -7,11 +7,12 @@ var ms = require('msgpack-stream')
 var program = require('commander')
 var debug = require('debug')
 var log = debug('client')
-var Auth = require("auth-stream")
+var join = require('path').join
+var reconnect = require('reconnect')
 
 program
 .version(require('../package.json').version)
-.option('-c, --config [file]', 'Config file to load [file]', '../config.json')
+.option('-c, --config [file]', 'Config file to load [file]', 'config.json')
 .option('-u, --user [user]', 'username to log in to server with', 'admin')
 .option('-t, --token [token]', 'token to authenticate with', 'admin')
 .parse(process.argv)
@@ -22,15 +23,20 @@ var mx = MuxDemux({
   }
 })
 
-var services = require(program.config)
-mx.pipe(net.connect({port: 8001}, function() {
-  log('sending auth')
+var services = require(join(process.cwd(), program.config))
+Object.keys(services).forEach(function(service) {
+  log(service + ':' + services[service], 'registering')
+})
+
+reconnect(function(socket) {
+  mx.pipe(socket).pipe(mx)
+  log('sending auth', program.user)
   var authStream = mx.createStream({
     auth: {
       id: program.user
     }
   })
-})).pipe(mx)
+}).connect(8001)
 
 
 mx.on('connection', function(req) {
