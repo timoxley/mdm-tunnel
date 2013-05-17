@@ -7,6 +7,7 @@ var ms = require('msgpack-stream')
 var httppp = require('httppp')
 var log = require('debug')('server')
 var program = require('commander')
+var Auth = require("auth-stream")
 
 program
 .version(require('../package.json').version)
@@ -49,7 +50,12 @@ var proxyServer = net.createServer(function(sock) {
       return combine(ms.createDecodeStream(), stream, ms.createEncodeStream())
     }
   })
-  mx.pipe(sock).pipe(mx)
+  var auth = Auth(mx, function(user, pass) {
+    log('login', id, pass)
+    clients[id] = mx
+    return true
+  })
+  sock.pipe(auth).pipe(sock)
   sock.on('end', function() {
     log('client disconnected')
   })
