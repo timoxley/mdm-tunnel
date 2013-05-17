@@ -13,7 +13,7 @@ program
 .version(require('../package.json').version)
 .option('-c, --config [file]', 'Config file to load [file]', '../config.json')
 .option('-u, --user [user]', 'username to log in to server with', 'admin')
-.option('-p, --pass [pass]', 'token to authenticate with', 'admin')
+.option('-t, --token [token]', 'token to authenticate with', 'admin')
 .parse(process.argv)
 
 var mx = MuxDemux({
@@ -23,7 +23,15 @@ var mx = MuxDemux({
 })
 
 var services = require(program.config)
-mx.pipe(Auth("tim", "oxley", net.connect({port: 8001}))).pipe(mx)
+mx.pipe(net.connect({port: 8001}, function() {
+  log('sending auth')
+  var authStream = mx.createStream({
+    auth: {
+      id: program.user
+    }
+  })
+})).pipe(mx)
+
 
 mx.on('connection', function(req) {
   log('new connection')

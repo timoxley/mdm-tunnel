@@ -14,13 +14,10 @@ program
 .option('-p, --port [port]', 'Port to listen for external connections on [port]', 8000)
 .parse(process.argv)
 
+var clients = {}
+
 var appServer = net.createServer(function(socket) {
   log('new connection')
-  if (!mx) {
-    log('Client not connected.')
-    return socket.end()
-  }
-
   var parser = httppp(function(info) {
     var host = (info[2].host && info[2].host.length) ? info[2].host[0] : null
     if (!host) {
@@ -29,10 +26,17 @@ var appServer = net.createServer(function(socket) {
       return
     }
     host = host.split(":").shift() // remove port from host header
-    var service = host.split('.')
-    log('requesting service', service[0])
+    var subdomain = host.split('.')
+    var service = subdomain[0]
+    var id = subdomain[1]
+    log('requesting service', service)
+    var mx = clients[id]
+    if (!mx) {
+      log('client not connected', id)
+      return socket.end()
+    }
     parser.pipe(mx.createStream({
-      service: service[0]
+      service: service
     })).pipe(socket);
   })
   socket.pipe(parser)
@@ -42,22 +46,25 @@ appServer.listen(program.port, function() {
   log('app server listening on', program.port)
 })
 
-var mx
 var proxyServer = net.createServer(function(sock) {
   log('client connected')
-  mx = MuxDemux({
+  var mx = MuxDemux({
     wrapper: function (stream) {
       return combine(ms.createDecodeStream(), stream, ms.createEncodeStream())
     }
   })
-  var auth = Auth(mx, function(user, pass) {
-    log('login', id, pass)
-    clients[id] = mx
-    return true
+  // auth
+  mx.on('connection', function(stream) {
+    if (!stream.meta.auth) return
+    var auth = stream.meta.auth
+    log('client identified', auth.id)
+    clients[auth.id] = mx
+    stream.end()
   })
-  sock.pipe(auth).pipe(sock)
+  sock.pipe(mx).pipe(sock)
   sock.on('end', function() {
-    log('client disconnected')
+    log('client disconnected', id)
+    delete clients[id]
   })
 })
 
