@@ -1,4 +1,4 @@
-#!/usr/local/bin/env node
+#!/usr/bin/env node
 
 var net = require('net')
 var MuxDemux = require('mux-demux')
