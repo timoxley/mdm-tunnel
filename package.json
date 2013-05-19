@@ -19,8 +19,8 @@
     "reconnect": "~1.2.1"
   },
   "bin": {
-    "client": "./bin/client",
-    "server": "./bin/server"
+    "mdm-client": "./bin/client",
+    "mdm-server": "./bin/server"
   },
   "devDependencies": {
     "ecstatic": "~0.4.2",
