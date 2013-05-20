@@ -49,10 +49,11 @@ services.config.json:
 
 ```
 
+Without -v, these apps are totally silent.
 
-### Getting started
+### Getting Started
 
-Open these in separate terminals or background:
+Open these in separate terminals or background them:
 
 ```sh
 # Boot the server
