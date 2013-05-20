@@ -5,14 +5,18 @@ var MuxDemux = require('mux-demux')
 var combine = require('stream-combiner')
 var ms = require('msgpack-stream')
 var httppp = require('httppp')
-var log = require('debug')('server')
 var program = require('commander')
 var Auth = require("auth-stream")
 
 program
 .version(require('../package.json').version)
 .option('-p, --port [port]', 'Port to listen for external connections on [port]', 8000)
+.option('-c, --client-port [client]', 'Port to listen for client connections on [client]', 8001)
+.option('-v, --verbose', 'verbose output')
 .parse(process.argv)
+
+if (program.verbose) process.env.DEBUG = '*'
+var log = require('debug')('server')
 
 var clients = {}
 
@@ -46,7 +50,7 @@ appServer.listen(program.port, function() {
   log('app server listening on', program.port)
 })
 
-var proxyServer = net.createServer(function(sock) {
+var clientServer = net.createServer(function(sock) {
   log('client connected')
   var mx = MuxDemux({
     wrapper: function (stream) {
@@ -71,6 +75,6 @@ var proxyServer = net.createServer(function(sock) {
   })
 })
 
-proxyServer.listen(8001, function() {
-  log('proxy server listening on', 8001)
+clientServer.listen(program.clientPort, function() {
+  log('client server listening on', program.clientPort)
 })
