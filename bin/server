@@ -6,7 +6,6 @@ var combine = require('stream-combiner')
 var ms = require('msgpack-stream')
 var httppp = require('httppp')
 var program = require('commander')
-var Auth = require("auth-stream")
 
 program
 .version(require('../package.json').version)
