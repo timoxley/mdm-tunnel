@@ -3,9 +3,25 @@
 ## Expose network services behind a NAT via a public interface
 
 ----
-## Client Usage
+
+## Example Configuration
+
+Expose services running on local port 9000/9001 on domains
+hello-world.username.example.com & websockets.username.example.com.
+
+services.config.json:
+
+```json
+{
+  "hello-world": 9000,
+  "websockets": 9001
+}
 ```
-Usage: client [options]
+
+## Client Usage
+
+```
+  Usage: client [options]
 
   Options:
 
@@ -13,6 +29,9 @@ Usage: client [options]
     -V, --version        output the version number
     -c, --config [file]  Config file to load [file]
     -u, --user [user]    username to log in to server with
+    -p, --port [port]    port on host server
+    -h, --host [host]    address of host server
+    -v, --verbose        verbose output
 ```
 
 ## Server Usage
@@ -22,23 +41,14 @@ Usage: client [options]
 
   Options:
 
-    -h, --help         output usage information
-    -V, --version      output the version number
-    -p, --port [port]  Port to listen for external connections on [port]
-
-```
-## Example Configuration
-
-Expose services running on local port 9000/9001 on domains
-hello-world.username.example.com & websockets.username.example.com.
+    -h, --help                  output usage information
+    -V, --version               output the version number
+    -p, --port [port]           Port to listen for external connections on [port]
+    -c, --client-port [client]  Port to listen for client connections on [client]
+    -v, --verbose               verbose output
 
 ```
 
-{
-  "hello-world": 9000,
-  "websockets": 9001
-}
-```
 
 ### Getting started
 
@@ -46,16 +56,16 @@ Open these in separate terminals or background:
 
 ```sh
 # Boot the server
-DEBUG=* mdm-server
+mdm-server -v
 
 # Boot the client
-DEBUG=* mdm-client -u tim
+mdm-client -u tim -v
 
 # Boot some service
 node examples/simple/server.js
 
 # Connect with browser
-open http://hello-world.tim.localhost.dev:3000
+open http://hello-world.tim.localhost.dev:8000
 ```
 
 ### Websocket Example
@@ -64,7 +74,7 @@ open http://hello-world.tim.localhost.dev:3000
 node examples/websockets/server.js
 
 # Connect with browser
-open http://websockets.tim.localhost.dev:3000
+open http://websockets.tim.localhost.dev:8000
 
 ```
 
