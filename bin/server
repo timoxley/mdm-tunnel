@@ -6,6 +6,8 @@ var combine = require('stream-combiner')
 var ms = require('msgpack-stream')
 var httppp = require('httppp')
 var program = require('commander')
+var responseStream = require('response-stream')
+var through = require('through')
 
 program
 .version(require('../package.json').version)
@@ -28,15 +30,30 @@ var appServer = net.createServer(function(socket) {
       socket.end()
       return
     }
-    host = host.split(":").shift() // remove port from host header
-    var subdomain = host.split('.')
+    var hostname = host.split(":").shift() // remove port from host header
+    var subdomain = hostname.split('.')
     var service = subdomain[0]
     var id = subdomain[1]
-    log('requesting service', service)
+    if (subdomain.length === 3) {
+      id = service
+      service = false
+    }
     var mx = clients[id]
+    log('requesting service', service || '*')
     if (!mx) {
       log('client not connected', id)
       return socket.end()
+    }
+    if (!service) {
+      parser.pipe(mx.createStream(
+        'services'
+      )).pipe(through(function(data) {
+        var rs = responseStream(socket)
+        rs.writeHead(200, {'Content-Type':'text/html'})
+        rs.write(servicesList(data, host))
+        rs.end()
+      }))
+      return
     }
     parser.pipe(mx.createStream({
       service: service
@@ -60,6 +77,7 @@ var clientServer = net.createServer(function(sock) {
   // auth
   var id
   mx.on('connection', function(stream) {
+    log('connection established')
     if (!stream.meta.auth) return
     var auth = stream.meta.auth
     log('client identified', auth.id)
@@ -77,3 +95,23 @@ var clientServer = net.createServer(function(sock) {
 clientServer.listen(program.clientPort, function() {
   log('client server listening on', program.clientPort)
 })
+
+function servicesList(data, host) {
+  var a = [
+'<!DOCTYPE html>',
+'<html>',
+  '<head>',
+    '<title>Services</title>',
+    '<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">',
+  '</head>',
+  '<body>',
+  '<ul>'
+  ].concat(data.split(',').map(function(item) {
+    return '<li><a href="http://'+item + '.' + host+'">'+item+'</a></li>'
+  })).concat([
+  '</ul>',
+  '</body>',
+  '</html>'
+  ]).join('\n')
+  return a
+}
