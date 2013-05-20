@@ -1,6 +1,8 @@
 #!/usr/bin/env node
 
 var net = require('net')
+var fs = require('fs')
+var path = require('path')
 var MuxDemux = require('mux-demux')
 var combine = require('stream-combiner')
 var ms = require('msgpack-stream')
@@ -10,7 +12,7 @@ var reconnect = require('reconnect')
 
 program
 .version(require('../package.json').version)
-.option('-c, --config [file]', 'Config file to load [file]', 'config.json')
+.option('-c, --config [file]', 'Config file to load [file]', '~/.tunnel-services.json')
 .option('-u, --user [user]', 'username to log in to server with', 'admin')
 .option('-p, --port [port]', 'port on host server', 8001)
 .option('-h, --host [host]', 'address of host server', 'localhost')
@@ -26,7 +28,19 @@ var mx = MuxDemux({
   }
 })
 
-var services = require(join(process.cwd(), program.config))
+function resolvePath(string) {
+  if (string.substr(0,1) === '~')
+    string = process.env.HOME + string.substr(1)
+  return path.resolve(string)
+}
+
+log('reading config', resolvePath(program.config))
+var services = JSON.parse(fs.readFileSync(resolvePath(program.config), 'utf8'))
+
+if (!services) {
+  console.error('config file invalid', program.config)
+  process.exit(1)
+}
 Object.keys(services).forEach(function(service) {
   log('registering service', service + ':' + services[service])
 })
