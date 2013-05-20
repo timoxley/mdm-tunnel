@@ -21,7 +21,7 @@ services.config.json:
 ## Client Usage
 
 ```
-  Usage: client [options]
+  Usage: mdm-tunnel-client [options]
 
   Options:
 
@@ -37,7 +37,7 @@ services.config.json:
 ## Server Usage
 ```
 
-  Usage: server [options]
+  Usage: mdm-tunnel-server [options]
 
   Options:
 
@@ -53,14 +53,25 @@ Without -v, these apps are totally silent.
 
 ### Getting Started
 
+#### Boot your local service
+
+e.g.
+
+#### Create a $HOME/.tunnel-services.json file:
+
+
+{
+  "hello-world": 8000
+}
+
 Open these in separate terminals or background them:
 
 ```sh
 # Boot the server
-mdm-server -v
+mdm-tunnel-server -v
 
-# Boot the client
-mdm-client -u tim -v
+# Boot the client on your machine
+mdm-tunnel-client -u tim -v
 
 # Boot some service
 node examples/simple/server.js
