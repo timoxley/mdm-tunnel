@@ -16,7 +16,8 @@
     "msgpack-stream": "0.0.3",
     "httppp": "~0.1.2",
     "debug": "~0.7.2",
-    "reconnect": "~1.2.1"
+    "reconnect": "~1.2.1",
+    "commander": "~1.1.1"
   },
   "bin": {
     "mdm-client": "./bin/client",
