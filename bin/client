@@ -22,8 +22,6 @@ program
 if (program.verbose) process.env.DEBUG = '*'
 var log = require('debug')('client')
 
-
-
 function resolvePath(string) {
   if (string.substr(0,1) === '~')
     string = process.env.HOME + string.substr(1)
