@@ -26,6 +26,7 @@
   },
   "devDependencies": {
     "ecstatic": "~0.4.2",
-    "shoe": "0.0.10"
+    "shoe": "0.0.10",
+    "supertest": "~0.6.0"
   }
 }
