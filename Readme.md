@@ -9,7 +9,7 @@
 Expose services running on local port 9000/9001 on domains
 hello-world.username.example.com & websockets.username.example.com.
 
-services.config.json:
+$HOME/.tunnel-services.json:
 
 ```json
 {
@@ -21,50 +21,56 @@ services.config.json:
 ## Client Usage
 
 ```
-  Usage: mdm-tunnel-client [options]
+Usage: mdm-tunnel-client [options]
 
-  Options:
+Options:
 
-    -h, --help           output usage information
-    -V, --version        output the version number
-    -c, --config [file]  Config file to load [file]
-    -u, --user [user]    username to log in to server with
-    -p, --port [port]    port on host server
-    -h, --host [host]    address of host server
-    -v, --verbose        verbose output
+  -h, --help           output usage information
+  -V, --version        output the version number
+  -c, --config [file]  Config file to load [file]
+  -u, --user [user]    username to log in to server with
+  -p, --port [port]    port on host server
+  -h, --host [host]    address of host server
+  -v, --verbose        verbose output
 ```
 
 ## Server Usage
 ```
+Usage: mdm-tunnel-server [options]
 
-  Usage: mdm-tunnel-server [options]
+Options:
 
-  Options:
-
-    -h, --help                  output usage information
-    -V, --version               output the version number
-    -p, --port [port]           Port to listen for external connections on [port]
-    -c, --client-port [client]  Port to listen for client connections on [client]
-    -v, --verbose               verbose output
-
+  -h, --help                  output usage information
+  -V, --version               output the version number
+  -p, --port [port]           Port to listen for external connections on [port]
+  -c, --client-port [client]  Port to listen for client connections on [client]
+  -v, --verbose               verbose output
 ```
 
-Without -v, these apps are totally silent.
+Without -v, mdm-tunnel runs totally silent.
 
-### Getting Started
-
-#### Boot your local service
-
-e.g.
-
-#### Create a $HOME/.tunnel-services.json file:
+### Examples
 
 
+#### Create a .tunnel-services.json file.
+
+By default the client searches for `.tunnel-services.json` in your
+`$HOME` directory. Keys are service names (can be anything), values are
+local port numbers for those services.
+
+```json
 {
-  "hello-world": 8000
+  "hello-world": 9000,
+  "websockets": 9001
 }
+````
+#### Boot the mdm-tunnel server and client
 
-Open these in separate terminals or background them:
+Open these in separate terminals or background them.
+
+Note: You'll need to set up wildcard subdomains to test the server on your local
+machine. On OSX, I recommend
+[dnsmasq](www.echoditto.com/blog/never-touch-your-local-etchosts-file-os-x-again).
 
 ```sh
 # Boot the server
@@ -80,8 +86,9 @@ node examples/simple/server.js
 open http://hello-world.tim.localhost.dev:8000
 ```
 
-### Websocket Example
+#### Websocket Example
 
+```sh
 # Boot up the service
 node examples/websockets/server.js
 
@@ -89,10 +96,5 @@ node examples/websockets/server.js
 open http://websockets.tim.localhost.dev:8000
 
 ```
-
-
-#### A note on subdomains on OSX
-
-A good solution for managing local subdomains on OSX is [dnsmasq](http://www.thekelleys.org.uk/dnsmasq/doc.html). [These
-instructions](http://www.echoditto.com/blog/never-touch-your-local-etchosts-file-os-x-again)
-seem to work fine.
+To change the available services, edit your
+`$HOME/.tunnel-services.json`.
