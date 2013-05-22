@@ -1,15 +1,6 @@
 #!/usr/bin/env node
 
-var net = require('net')
-var fs = require('fs')
-var path = require('path')
-var MuxDemux = require('mux-demux')
-var combine = require('stream-combiner')
-var ms = require('msgpack-stream')
 var program = require('commander')
-var join = require('path').join
-var reconnect = require('reconnect')
-
 program
 .version(require('../package.json').version)
 .option('-c, --config [file]', 'config file to load [file]', '~/.tunnel-services.json')
@@ -22,6 +13,14 @@ program
 if (program.verbose) process.env.DEBUG = '*'
 var log = require('debug')('client')
 
+var net = require('net')
+var fs = require('fs')
+var path = require('path')
+var join = require('path').join
+var reconnect = require('reconnect')
+
+var Client = require('../client')
+
 function resolvePath(string) {
   if (string.substr(0,1) === '~')
     string = process.env.HOME + string.substr(1)
@@ -29,64 +28,20 @@ function resolvePath(string) {
 }
 
 log('reading config', resolvePath(program.config))
-var services = JSON.parse(fs.readFileSync(resolvePath(program.config), 'utf8'))
+program.services = JSON.parse(fs.readFileSync(resolvePath(program.config), 'utf8'))
 
-if (!services) {
+if (!program.services) {
   console.error('config file invalid', program.config)
   process.exit(1)
 }
-Object.keys(services).forEach(function(service) {
-  log('registering service', service + ':' + services[service])
+Object.keys(program.services).forEach(function(service) {
+  log('registering service', service + ':' + program.services[service])
 })
 
 log('connecting', program.host + ':' + program.port)
 reconnect(function(socket) {
-  log('sending auth', program.user)
-  var mx = MuxDemux({
-    wrapper: function (stream) {
-      return combine(ms.createDecodeStream(), stream, ms.createEncodeStream())
-    }
-  })
-  socket.pipe(mx).pipe(socket)
-  var authStream = mx.createStream({
-    auth: {
-      id: program.user
-    }
-  })
-  authStream.write({ id: program.user })
-  authStream.end()
-
-  mx.on('connection', function(req) {
-    log('new connection', req.meta)
-    if (!req.meta.service && req.meta !== 'services') {
-      log('no service specified')
-      return req.end()
-    }
-
-    if (req.meta.service) return getService(req)
-      if (req.meta === 'services') return getServices(req)
-  })
-
+  socket.pipe(Client(program)).pipe(socket)
 }).connect({
   port: program.port,
   host: program.host
 })
-
-function getServices(req) {
-  req.write(Object.keys(services).join(','))
-  req.end()
-}
-
-function getService(req) {
-  var service = req.meta.service
-  var port = services[req.meta.service]
-
-  log('service request', service)
-  var socket = net.connect({port: port})
-  socket.on('error', function(error) {
-    log('socket error', service, port, error)
-    req.end()
-  })
-
-  req.pipe(socket).pipe(req)
-}
