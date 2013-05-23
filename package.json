@@ -4,7 +4,7 @@
   "description": "Access network services behind a NAT",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "mocha test/executables.js"
   },
   "repository": "",
   "author": "",
@@ -27,6 +27,7 @@
   "devDependencies": {
     "ecstatic": "~0.4.2",
     "shoe": "0.0.10",
-    "supertest": "~0.6.0"
+    "supertest": "~0.6.0",
+    "mocha": "~1.10.0"
   }
 }
