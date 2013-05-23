@@ -4,11 +4,15 @@
   "description": "Access network services behind a NAT",
   "main": "index.js",
   "scripts": {
-    "test": "mocha test/executables.js"
+    "test": "mocha test/executables.js",
+    "start": "node server.js"
   },
-  "repository": "",
-  "author": "",
-  "license": "BSD",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/timoxley/mdm-tunnel.git"
+  },
+  "author": "Tim Oxley",
+  "license": "MIT",
   "dependencies": {
     "through": "~2.3.4",
     "mux-demux": "~3.6.3",
@@ -29,5 +33,21 @@
     "shoe": "0.0.10",
     "supertest": "~0.6.0",
     "mocha": "~1.10.0"
-  }
+  },
+  "readmeFilename": "Readme.md",
+  "gitHead": "924c9876abb3d8ea3d69b86d69865e0613865ae5",
+  "directories": {
+    "example": "example",
+    "test": "test"
+  },
+  "keywords": [
+    "tcp",
+    "tunnel",
+    "streams",
+    "nat",
+    "traversal"
+  ],
+  "contributors": [
+    'Nexxy <emily@contactvibe.com> (https://github.com/nexxy)'
+  ]
 }
