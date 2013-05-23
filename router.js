@@ -42,20 +42,20 @@ module.exports = function(program, socket, findId, findService) {
 }
 
 function subdomainToId(headers) {
-    var host = (headers[2].host && headers[2].host.length) ? headers[2].host[0] : null
-    if (!host) {
-      log('could not parse host', headers[2]);
-      socket.end()
-      return
-    }
-    var hostname = host.split(":").shift() // remove port from host header
-    var subdomain = hostname.split('.')
-    var id = subdomain[1]
-    if (subdomain.length === 3) {
-      id =  subdomain[0]
-      service = false
-    }
-    return id
+  var host = (headers[2].host && headers[2].host.length) ? headers[2].host[0] : null
+  if (!host) {
+    log('could not parse host', headers[2]);
+    socket.end()
+    return
+  }
+  var hostname = host.split(":").shift() // remove port from host header
+  var subdomain = hostname.split('.')
+  var id = subdomain[1]
+  if (subdomain.length === 3) {
+    id =  subdomain[0]
+    service = false
+  }
+  return id
 }
 
 function subdomainToService(headers) {
