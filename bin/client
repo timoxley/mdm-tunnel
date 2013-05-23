@@ -40,6 +40,12 @@ reconnect(function(socket) {
 }).connect({
   port: program.port,
   host: program.host
+}).on('connect', function() {
+  log('connected')
+}).on('disconnect', function(err) {
+  log('disconnected', err.message)
+}).on('reconnect', function(attempt, timeout) {
+  log('attempting reconnection %d after %dms', attempt, timeout)
 })
 
 /**
