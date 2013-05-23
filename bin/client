@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 
 var program = require('commander')
+
 program
 .version(require('../package.json').version)
 .option('-c, --config [file]', 'config file to load [file]', '~/.tunnel-services.json')
@@ -13,19 +14,13 @@ program
 if (program.verbose) process.env.DEBUG = '*'
 var log = require('debug')('client')
 
+// Defer loading rest of deps until after setting DEBUG env var.
 var net = require('net')
 var fs = require('fs')
 var path = require('path')
-var join = require('path').join
 var reconnect = require('reconnect')
 
 var Client = require('../client')
-
-function resolvePath(string) {
-  if (string.substr(0,1) === '~')
-    string = process.env.HOME + string.substr(1)
-  return path.resolve(string)
-}
 
 log('reading config', resolvePath(program.config))
 program.services = JSON.parse(fs.readFileSync(resolvePath(program.config), 'utf8'))
@@ -34,6 +29,7 @@ if (!program.services) {
   console.error('config file invalid', program.config)
   process.exit(1)
 }
+
 Object.keys(program.services).forEach(function(service) {
   log('registering service', service + ':' + program.services[service])
 })
@@ -45,3 +41,12 @@ reconnect(function(socket) {
   port: program.port,
   host: program.host
 })
+
+/**
+ * Support ~ in path name.
+ */
+function resolvePath(string) {
+  if (string.substr(0,1) === '~')
+    string = process.env.HOME + string.substr(1)
+  return path.resolve(string)
+}

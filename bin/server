@@ -12,13 +12,8 @@ program
 if (program.verbose) process.env.DEBUG = '*'
 var log = require('debug')('server')
 
+// Defer loading rest of deps until after setting DEBUG env var.
 var net = require('net')
-var MuxDemux = require('mux-demux')
-var combine = require('stream-combiner')
-var ms = require('msgpack-stream')
-var responseStream = require('response-stream')
-var through = require('through')
-
 var Router = require('../router')
 var Server = require('../server')
 
@@ -39,5 +34,3 @@ var clientServer = net.createServer(function(socket) {
 clientServer.listen(program.clientPort, function() {
   log('client server listening on', program.clientPort)
 })
-
-

@@ -25,7 +25,7 @@ before(function(done) {
   server.stderr.pipe(through(function(data) {
     this.push(data)
     if (data.match(/client\ identified/)) done()
-  })).pipe(process.stdout)
+  }))//.pipe(process.stdout) for debuggin
 })
 
 after(function() {
