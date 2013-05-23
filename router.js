@@ -7,30 +7,22 @@ var responseStream = require('response-stream')
 var through = require('through')
 var log = require('debug')('router')
 
-module.exports = function(program, socket) {
+module.exports = function(program, socket, findId, findService) {
+
+  findId = findId || subdomainToId
+  findService = findService || subdomainToService
+
   var clients = program.clients
   log('new connection')
   var parser = httppp(function(info) {
-    var host = (info[2].host && info[2].host.length) ? info[2].host[0] : null
-    if (!host) {
-      log('could not parse host', info[2]);
-      socket.end()
-      return
-    }
-    var hostname = host.split(":").shift() // remove port from host header
-    var subdomain = hostname.split('.')
-    var service = subdomain[0]
-    var id = subdomain[1]
-    if (subdomain.length === 3) {
-      id = service
-      service = false
-    }
+    var id = findId(info)
+    var service = findService(info)
     var mx = clients[id]
-    log('requesting service', service || '*')
     if (!mx) {
       log('client not connected', id)
       return socket.end()
     }
+    log('requesting service', service || '*')
     if (!service) {
       parser.pipe(mx.createStream(
         'services'
@@ -47,6 +39,39 @@ module.exports = function(program, socket) {
     })).pipe(socket);
   })
   return parser
+}
+
+function subdomainToId(headers) {
+    var host = (headers[2].host && headers[2].host.length) ? headers[2].host[0] : null
+    if (!host) {
+      log('could not parse host', headers[2]);
+      socket.end()
+      return
+    }
+    var hostname = host.split(":").shift() // remove port from host header
+    var subdomain = hostname.split('.')
+    var id = subdomain[1]
+    if (subdomain.length === 3) {
+      id =  subdomain[0]
+      service = false
+    }
+    return id
+}
+
+function subdomainToService(headers) {
+  var host = (headers[2].host && headers[2].host.length) ? headers[2].host[0] : null
+  if (!host) {
+    log('could not parse host', headers[2]);
+    socket.end()
+    return
+  }
+  var hostname = host.split(":").shift() // remove port from host header
+  var subdomain = hostname.split('.')
+  var service = subdomain[0]
+  if (subdomain.length === 3) {
+    service = false
+  }
+  return service
 }
 
 function servicesList(data, host) {
