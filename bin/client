@@ -8,6 +8,7 @@ program
 .option('-u, --user [user]', 'username to log in to server with', 'admin')
 .option('-p, --port [port]', 'port on host server', 8001)
 .option('-h, --host [host]', 'address of host server', 'localhost')
+.option('--max-attempts [number]', 'maximum number of reconnection attempts', 3, Number)
 .option('-v, --verbose', 'verbose output')
 .parse(process.argv)
 
@@ -35,7 +36,7 @@ Object.keys(program.services).forEach(function(service) {
 })
 
 log('connecting', program.host + ':' + program.port)
-reconnect(function(socket) {
+var reconnector = reconnect(function(socket) {
   socket.pipe(Client(program)).pipe(socket)
 }).connect({
   port: program.port,
@@ -44,8 +45,13 @@ reconnect(function(socket) {
   log('connected')
 }).on('disconnect', function(err) {
   log('disconnected', err.message)
-}).on('reconnect', function(attempt, timeout) {
-  log('attempting reconnection %d after %dms', attempt, timeout)
+}).on('reconnect', function(attempts, timeout) {
+  attempts++
+  log('attempting reconnection %d of %d after %dms', attempts, program.maxAttempts, timeout)
+  if (attempts < program.maxAttempts) return
+  reconnector.reconnect = false
+  log('could not connect.')
+  process.exit(1)
 })
 
 /**
