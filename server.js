@@ -3,7 +3,8 @@ var combine = require('stream-combiner')
 var ms = require('msgpack-stream')
 var log = require('debug')('server')
 
-module.exports = function(program) {
+module.exports = function server(program) {
+  var authTimeout = undefined
   log('client connected')
   var clients = program.clients
   var mx = MuxDemux({
@@ -17,6 +18,9 @@ module.exports = function(program) {
   mx.on('connection', function(stream) {
     log('connection established')
     if (!stream.meta.auth) return
+
+    clearTimeout(authTimeout)
+
     var auth = stream.meta.auth
     log('client identified', auth.id)
     clients[auth.id] = mx
@@ -27,5 +31,11 @@ module.exports = function(program) {
     log('client disconnected', id)
     id && delete clients[id]
   })
+  log('waiting for auth...')
+
+  authTimeout = setTimeout(function() {
+    log('timed out waiting for auth.')
+    mx.end()
+  }, 3000)
   return mx
 }
