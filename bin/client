@@ -44,7 +44,10 @@ var reconnector = reconnect(function(socket) {
 }).on('connect', function() {
   log('connected')
 }).on('disconnect', function(err) {
-  log('disconnected', err.message)
+  var message = err || 'No disconneciton error.'
+  if (err.message)
+  message = err.message
+  log('disconnected', message)
 }).on('reconnect', function(attempts, timeout) {
   attempts++
   log('attempting reconnection %d of %d after %dms', attempts, program.maxAttempts, timeout)

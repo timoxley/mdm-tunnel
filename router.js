@@ -14,9 +14,10 @@ module.exports = function(program, socket, findId, findService) {
 
   var clients = program.clients
   log('new connection')
-  var parser = httppp(function(info) {
-    var id = findId(info)
-    var service = findService(info)
+  var parser = httppp(function(headers) {
+    var id = findId(headers)
+    var service = findService(headers)
+    var host = (headers[2].host && headers[2].host.length) ? headers[2].host[0] : null
     var mx = clients[id]
     if (!mx) {
       log('client not connected', id)
