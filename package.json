@@ -4,7 +4,7 @@
   "description": "Access network services behind a NAT",
   "main": "index.js",
   "scripts": {
-    "test": "mocha test/executables.js",
+    "test": "mocha test",
     "start": "node server.js"
   },
   "repository": {

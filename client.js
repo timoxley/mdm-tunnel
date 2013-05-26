@@ -7,21 +7,22 @@ var combine = require('stream-combiner')
 var ms = require('msgpack-stream')
 var net = require('net')
 
+/**
+ * @param program.services
+ * @param program.user
+ *
+ * @return MuxDemux Stream
+ */
+
 module.exports = function(program) {
   var services = program.services
-  log('sending auth', program.user)
   var mx = MuxDemux({
     wrapper: function (stream) {
       return combine(ms.createDecodeStream(), stream, ms.createEncodeStream())
     }
   })
-  // Authorize
-  var authStream = mx.createStream({
-    auth: { id: program.user }
-  })
-  authStream.write({ id: program.user })
-  authStream.end()
 
+ authenticate(program.user, mx)
   mx.on('connection', function(req) {
     log('new connection', req.meta)
     if (!req.meta.service && req.meta !== 'services') {
@@ -33,6 +34,7 @@ module.exports = function(program) {
     if (req.meta === 'services') return getServices(req)
   })
   return mx
+
   function getServices(req) {
     req.write(Object.keys(services).join(','))
     req.end()
@@ -50,6 +52,20 @@ module.exports = function(program) {
     })
 
     req.pipe(socket).pipe(req)
+  }
+
+  function authenticate(user, mx) {
+    // Authorize
+    if (!user) {
+      log('no auth supplied!', user)
+      return
+    }
+    log('sending auth', user)
+    var authStream = mx.createStream({
+      auth: { id: user }
+    })
+    authStream.write({ id: user })
+    authStream.end()
   }
 }
 

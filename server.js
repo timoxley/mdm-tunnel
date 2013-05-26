@@ -4,6 +4,7 @@ var ms = require('msgpack-stream')
 var log = require('debug')('server')
 
 module.exports = function server(program) {
+  program.timeout = program.timeout || 3000
   var authTimeout = undefined
   log('client connected')
   var clients = program.clients
@@ -36,6 +37,6 @@ module.exports = function server(program) {
   authTimeout = setTimeout(function() {
     log('timed out waiting for auth.')
     mx.end()
-  }, 3000)
+  }, program.timeout)
   return mx
 }
