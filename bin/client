@@ -45,7 +45,7 @@ var reconnector = reconnect(function(socket) {
   log('connected')
 }).on('disconnect', function(err) {
   var message = err || 'No disconneciton error.'
-  if (err.message)
+  if ((err) && err.message)
   message = err.message
   log('disconnected', message)
 }).on('reconnect', function(attempts, timeout) {
