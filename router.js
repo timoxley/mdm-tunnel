@@ -7,92 +7,87 @@ var responseStream = require('response-stream')
 var through = require('through')
 var log = require('debug')('router')
 
-module.exports = function(program, socket, lookup, auth) {
+module.exports = function(program, socket, findId, findService) {
+  var lookup
+  if (arguments.length === 3) {
+    lookup = findId
+  } else {
+    findId = findId || module.exports.subdomainToId
+    findService = findService || module.exports.subdomainToService
+    lookup = function(cb) {
+      findId(function(err, id) {
+        findService(function(err, service) {
+          cb(err, id, service)
+        })
+      })
+    }
+  }
 
   lookup = lookup || defaultLookup
-  auth = auth || defaultAuth
 
   var clients = program.clients
   log('new connection')
-  var request = httppp(function (headers) {
-
-    lookup(headers, function (err, data) {
-
-      if(err) {
-        log(err)
-        return sock.end()
-      }
-      var id = data.id
-      var host = data.host
-      var service = data.service
-
-      auth(headers, function (err) {
-
-        if(err) {
-          log(err)
-          return sock.end()
-        }
-        var mx = clients[id]
-        if (!mx) {
-
-          log('client not connected', id)
-          return socket.end()
-        }
-
-        log('requesting service', service || '*')
-        if (!service) { // requesting service listing
-
-          request.pipe(mx.createStream(
-            'services'
-          )).pipe(through(function(data) {
-            var rs = responseStream(socket)
-            rs.writeHead(200, {'Content-Type':'text/html'})
-            rs.write(servicesList(data, host))
-            rs.end()
-          }))
-          return
-        }
-
-        request.pipe(mx.createStream({
-          service: service
-        })).pipe(socket);
-      })
-    })
-  })
-  return request
+  var parser = httppp(parseHeaders(lookup))
+  return parser
 }
 
-function defaultLookup(headers, cb) {
-
-  var host = (headers[2].host && headers[2].host.length)
-    ? headers[2].host[0]
-    : null
-  ;
-  if(!host) { // invalid headers
-
-    var err = 'could not parse host'
-    log(err, headers[2])
-    return cb(new Error(err))
+function parseHeaders = function(lookup) {
+  return function(headers) {
+    lookup(headers, function(err, id, service) {
+      if (err) {
+        log('lookup error', err)
+        socket.end()
+      }
+      var host = (headers[2].host && headers[2].host.length) ? headers[2].host[0] : null
+      var mx = clients[id]
+      if (!mx) {
+        log('client not connected', id)
+        return socket.end()
+      }
+      log('requesting service', service || '*')
+      if (!service) {
+        parser.pipe(mx.createStream(
+          'services'
+        )).pipe(through(function(data) {
+          var rs = responseStream(socket)
+          rs.writeHead(200, {'Content-Type':'text/html'})
+          rs.write(servicesList(data, host))
+          rs.end()
+        }))
+        return
+      }
+      parser.pipe(mx.createStream({
+        service: service
+      })).pipe(socket);
+    })
   }
+}
 
-  var hostname = host.split(':').shift()  // remove port from host header
+function subdomainToId(headers, fn) {
+  var host = (headers[2].host && headers[2].host.length) ? headers[2].host[0] : null
+  if (!host) return cb(new Error('could not parse host' + headers[2]))
+
+  var hostname = host.split(":").shift() // remove port from host header
   var subdomain = hostname.split('.')
   var service = subdomain[0]
   var id = subdomain[1]
-
-  if(subdomain.length === 3) {
-
-    id = subdomain[0]
+  if (subdomain.length === 3) {
+    id =  subdomain[0]
     service = false
   }
-  cb(null, {
+  fn(null, id)
+}
 
-    host : host
-    , hostname : hostname // no port
-    , subdomain : subdomain
-    , service : service
-    , id : id
-  })
+function subdomainToService(headers, cb) {
+  var host = (headers[2].host && headers[2].host.length) ? headers[2].host[0] : null
+  if (!host) return cb(new Error('could not parse host' + headers[2]))
+  var hostname = host.split(":").shift() // remove port from host header
+  var subdomain = hostname.split('.')
+  var service = subdomain[0]
+  if (subdomain.length === 3) {
+    service = false
+  }
+  fn(null, service)
 }
 
 function defaultAuth(headers, cb) { cb(null) }
