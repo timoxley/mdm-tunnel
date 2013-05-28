@@ -1,7 +1,6 @@
 "use strict"
 
 var log = require('debug')('client')
-var through = require('through')
 var MuxDemux = require('mux-demux')
 var combine = require('stream-combiner')
 var ms = require('msgpack-stream')
