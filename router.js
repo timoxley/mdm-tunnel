@@ -35,7 +35,7 @@ module.exports = function(program, socket, findId, findService) {
   } else {
     findId = findId || subdomainToId
     findService = findService || subdomainToService
-    find = function(headers, cb) {
+    lookup = function(headers, cb) {
       findId(headers, function(err, id) {
         findService(headers, function(err, service) {
           cb(err, id, service)
