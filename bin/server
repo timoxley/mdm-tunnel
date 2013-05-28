@@ -22,7 +22,6 @@ program.clients = {}
 var appServer = net.createServer(function(socket) {
   socket.pipe(Router(program, socket))
 })
-
 appServer.listen(program.port, function() {
   log('app server listening on', program.port)
 })

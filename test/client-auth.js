@@ -21,6 +21,6 @@ it('will not connect if not supplied a user', function(done) {
     done(new Error('Should not connect!'))
   })
 
-  client.pipe(server).pipe(server)
+  client.pipe(server)
   setTimeout(done, 100)
 })

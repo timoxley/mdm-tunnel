@@ -3,6 +3,15 @@ var combine = require('stream-combiner')
 var ms = require('msgpack-stream')
 var log = require('debug')('server')
 
+/**
+ * Create a stream that authenticates and stores connected
+ * tunnel clients.
+ *
+ * @param {Number} program.timeout auth timeout in milliseconds
+ * @param {Object} program.clients store of connected clients
+ * @return {MuxDemux}
+ */
+
 module.exports = function server(program) {
   program.timeout = program.timeout || 3000
   var authTimeout = undefined
@@ -14,7 +23,7 @@ module.exports = function server(program) {
     }
   })
 
-  // auth
+  // TODO: more secure auth
   var id
   mx.on('connection', function(stream) {
     log('connection established')
