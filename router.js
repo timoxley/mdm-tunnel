@@ -26,8 +26,7 @@ module.exports = function(program, socket, lookup, auth) {
       var host = data.host
       var service = data.service
 
-      //TODO: auth step
-      auth(headers, function(err) {
+      auth(headers, function (err) {
 
         if(err) {
           log(err)
