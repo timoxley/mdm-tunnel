@@ -7,21 +7,23 @@ var ms = require('msgpack-stream')
 var net = require('net')
 
 /**
- * @param program.services
- * @param program.id
+ * @param options.id
+ * @param options.services
  *
  * @return MuxDemux Stream
  */
 
-module.exports = function(program) {
-  var services = program.services
+module.exports = function(options) {
+  options = options || {}
+  var id = options.id
+  var services = options.services
+
   var mx = MuxDemux({
     wrapper: function (stream) {
       return combine(ms.createDecodeStream(), stream, ms.createEncodeStream())
     }
   })
 
-  authenticate(program.id, mx)
   mx.on('connection', function(req) {
     log('new connection', req.meta)
     if (!req.meta.service && req.meta !== 'services') {
@@ -32,6 +34,7 @@ module.exports = function(program) {
     if (req.meta.service) return getService(req)
     if (req.meta === 'services') return getServices(req)
   })
+  authenticate(id, mx)
   return mx
 
   function getServices(req) {
