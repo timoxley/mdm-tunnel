@@ -20,7 +20,7 @@ var server, client
 before(function(done) {
   server = exec(__dirname + '/../bin/server -p 9900 -v')
   server.on('error', done)
-  client = exec(__dirname + '/../bin/client --user test --config ' + configPath)
+  client = exec(__dirname + '/../bin/client --id test --service-definitions ' + configPath)
   client.on('error', done)
   server.stderr.pipe(through(function(data) {
     this.push(data)

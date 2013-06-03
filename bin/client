@@ -8,7 +8,7 @@ var program = require('commander')
 
 program
 .version(require('../package.json').version)
-.option('-c, --config [file]', 'config file to load [file]', '~/.tunnel-services.json')
+.option('-s, --service-definitions [file]', 'file containing service/port mappings', '~/.tunnel-services.json')
 .option('-i, --id [id]', 'id to log in to server with', 'admin')
 .option('-p, --port [port]', 'port on host server', 8001)
 .option('-h, --host [host]', 'address of host server', 'localhost')
@@ -36,11 +36,11 @@ var log = require('debug')('client')
 var Client = require('../client')
 
 
-log('reading config', resolvePath(program.config))
-program.services = JSON.parse(fs.readFileSync(resolvePath(program.config), 'utf8'))
+log('reading services', resolvePath(program.serviceDefinitions))
+program.services = JSON.parse(fs.readFileSync(resolvePath(program.serviceDefinitions), 'utf8'))
 
 if (!program.services) {
-  console.error('config file invalid', program.config)
+  console.error('services definition file invalid', program.serviceDefinitions)
   process.exit(1)
 }
 
