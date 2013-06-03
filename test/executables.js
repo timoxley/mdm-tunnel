@@ -22,10 +22,11 @@ before(function(done) {
   server.on('error', done)
   client = exec(__dirname + '/../bin/client --id test --service-definitions ' + configPath)
   client.on('error', done)
+  client.on('exit', done)
   server.stderr.pipe(through(function(data) {
     this.push(data)
     if (data.match(/client\ identified/)) done()
-  }))//.pipe(process.stdout) for debuggin
+  }))//.pipe(process.stdout) //for debuggin
 })
 
 after(function() {
