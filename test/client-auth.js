@@ -8,7 +8,7 @@ it('will not connect if not supplied a user', function(done) {
   var clients = {}
 
   var client = Client({
-    user: false
+    id: false
   })
 
   var server = MuxDemux({

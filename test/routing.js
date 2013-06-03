@@ -20,7 +20,7 @@ describe('routing', function() {
     appServer.listen(program.port)
 
     var client = Client({
-      user: 'tim',
+      id: 'tim',
       services: {
         'test': 9788
       }

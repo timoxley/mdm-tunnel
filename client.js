@@ -8,7 +8,7 @@ var net = require('net')
 
 /**
  * @param program.services
- * @param program.user
+ * @param program.id
  *
  * @return MuxDemux Stream
  */
@@ -21,7 +21,7 @@ module.exports = function(program) {
     }
   })
 
- authenticate(program.user, mx)
+  authenticate(program.id, mx)
   mx.on('connection', function(req) {
     log('new connection', req.meta)
     if (!req.meta.service && req.meta !== 'services') {
@@ -53,17 +53,17 @@ module.exports = function(program) {
     req.pipe(socket).pipe(req)
   }
 
-  function authenticate(user, mx) {
+  function authenticate(id, mx) {
     // Authorize
-    if (!user) {
-      log('no auth supplied!', user)
+    if (!id) {
+      log('no auth supplied!', id)
       return
     }
-    log('sending auth', user)
+    log('sending auth', id)
     var authStream = mx.createStream({
-      auth: { id: user }
+      auth: { id: id }
     })
-    authStream.write({ id: user })
+    authStream.write({ id: id })
     authStream.end()
   }
 }

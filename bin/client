@@ -9,7 +9,7 @@ var program = require('commander')
 program
 .version(require('../package.json').version)
 .option('-c, --config [file]', 'config file to load [file]', '~/.tunnel-services.json')
-.option('-u, --user [user]', 'username to log in to server with', 'admin')
+.option('-i, --id [id]', 'id to log in to server with', 'admin')
 .option('-p, --port [port]', 'port on host server', 8001)
 .option('-h, --host [host]', 'address of host server', 'localhost')
 .option('--max-attempts [number]', 'maximum number of reconnection attempts', 3, Number)
