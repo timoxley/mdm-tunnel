@@ -1,5 +1,9 @@
 #!/usr/bin/env node
 
+var net = require('net')
+var fs = require('fs')
+var path = require('path')
+var reconnect = require('reconnect')
 var program = require('commander')
 
 program
@@ -10,18 +14,27 @@ program
 .option('-h, --host [host]', 'address of host server', 'localhost')
 .option('--max-attempts [number]', 'maximum number of reconnection attempts', 3, Number)
 .option('-v, --verbose', 'verbose output')
-.parse(process.argv)
+
+try {
+  var opts = fs.readFileSync(process.cwd() + '/tunnel.opts', 'utf8')
+    .trim()
+    .split(/\s+/);
+
+  process.argv = process.argv
+    .slice(0, 2)
+    .concat(opts.concat(process.argv.slice(2)));
+} catch (err) {
+  // ignore
+}
+program.parse(process.argv)
 
 if (program.verbose) process.env.DEBUG = '*'
 var log = require('debug')('client')
 
 // Defer loading rest of deps until after setting DEBUG env var.
-var net = require('net')
-var fs = require('fs')
-var path = require('path')
-var reconnect = require('reconnect')
 
 var Client = require('../client')
+
 
 log('reading config', resolvePath(program.config))
 program.services = JSON.parse(fs.readFileSync(resolvePath(program.config), 'utf8'))
