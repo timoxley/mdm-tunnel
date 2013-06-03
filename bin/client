@@ -12,7 +12,7 @@ program
 .option('-i, --id [id]', 'id to log in to server with', 'admin')
 .option('-p, --port [port]', 'port on host server', 8001)
 .option('-h, --host [host]', 'address of host server', 'localhost')
-.option('--max-attempts [number]', 'maximum number of reconnection attempts', 3, Number)
+.option('--max-attempts [number]', 'maximum number of reconnection attempts', 10, Number)
 .option('-v, --verbose', 'verbose output')
 
 try {
