@@ -122,8 +122,11 @@ Router instance you run on the webserver.
 
 ```js
 net.createServer(function(socket) {
-  socket.pipe(Router(config, socket, function(headers, cb) {
-     async.series([auth, route], cb)
+  socket.pipe(Router(config, socket, function(headers, done) {
+     async.series([
+       auth.bind(null, headers)),
+       route.bind(null, headers)
+    ], done)
   }))
 }).listen(80)
 ```
