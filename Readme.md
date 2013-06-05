@@ -114,3 +114,18 @@ open http://websockets.tim.localhost.dev:8000
 ```
 To change the available services, edit your
 `$HOME/.tunnel-services.json`.
+
+## Authentication / Security
+
+The default implementation does not enforce any security. You can implement simple security inside the
+Router instance you run on the webserver.
+
+```js
+net.createServer(function(socket) {
+  socket.pipe(Router(config, socket, function(headers, cb) {
+     async.series([auth, route], cb)
+  }))
+}).listen(80)
+```
+
+This isn't very sophisticated and could be improved.
