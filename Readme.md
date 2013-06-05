@@ -13,6 +13,8 @@ webserver,
 which is accessible to the Internet. The webserver then accepts the incoming requests and figures out which connections this request should be routed
 through.
 
+![mdm-tunnel-flow](https://f.cloud.github.com/assets/43438/610762/8d1922a8-cdbe-11e2-9447-6117044fd0b1.png)
+
 There are probably better ways to do this, this is my first foray in
 this space.
 
