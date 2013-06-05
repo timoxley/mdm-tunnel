@@ -9,8 +9,9 @@ cannot access this server unless you forward ports to it on your home router.
 
 mdm-tunnel gets around the blocked incoming connections by simply opening an *outgoing*, persistent, duplex connection to a
 webserver,
-which is accessible to the Internet. The webserver then accepts the incoming requests and figures out which connections this request should be routed
-through.
+which is accessible to the Internet. The webserver then accepts the incoming requests from the internet,
+and figures out which connection a request should be piped
+to.
 
 ![mdm-tunnel-flow](https://f.cloud.github.com/assets/43438/610762/8d1922a8-cdbe-11e2-9447-6117044fd0b1.png)
 
