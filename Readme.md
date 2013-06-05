@@ -2,6 +2,20 @@
 
 ## Expose network services behind a NAT via a public interface
 
+mdm-tunnel is a very simple (read: naive) way to get around the fact that the devices
+on the Internet cannot create *incoming* connections to devices behind a
+NAT i.e. if you boot a webserver on your home computer, the internet
+cannot access this server unless you forward ports to it on your home router. 
+
+mdm-tunnel gets around the blocked incoming connections
+this by simply opening an *outgoing*, persistent, duplex connection to a
+webserver,
+which is accessible to the Internet. The webserver then accepts the incoming requests and figures out which connections this request should be routed
+through.
+
+There are probably better ways to do this, this is my first foray in
+this space.
+
 ----
 
 ## Example Configuration
