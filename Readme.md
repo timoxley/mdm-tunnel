@@ -1,5 +1,7 @@
 # MuxDemux Tunnel
 
+[![Build Status](https://travis-ci.org/timoxley/mdm-tunnel.png?branch=master)](https://travis-ci.org/timoxley/mdm-tunnel)
+
 ## Expose network services behind a NAT via a public interface
 
 mdm-tunnel is a very simple (read: naive) way to get around the fact that the devices
