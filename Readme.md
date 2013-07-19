@@ -1,6 +1,6 @@
-# MuxDemux Tunnel
-
 [![Build Status](https://travis-ci.org/timoxley/mdm-tunnel.png?branch=master)](https://travis-ci.org/timoxley/mdm-tunnel)
+
+# MuxDemux Tunnel
 
 ## Expose network services behind a NAT via a public interface
 
