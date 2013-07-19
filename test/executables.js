@@ -35,12 +35,11 @@ after(function() {
 })
 
 describe('client', function() {
-  // PENDING FOR NOW: requires a local *.dev domain to be set up :/
-  it('works')
-  //function(done) {
-    //request('http://target.test.local.dev:9900')
-    //.get('/')
-    //.expect('Test-Passed', 'true')
-    //.expect(200, done)
-  //}
+  it('works', function(done) {
+    // NOTE: requires a local *.dev domain to be set up :/
+    request('http://target.test.local.dev:9900')
+    .get('/')
+    .expect('Test-Passed', 'true')
+    .expect(200, done)
+  })
 })
