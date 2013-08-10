@@ -88,7 +88,7 @@ Open these in separate terminals or background them.
 
 Note: You'll need to set up wildcard subdomains to test the server on your local
 machine. On OSX, I recommend
-[dnsmasq](www.echoditto.com/blog/never-touch-your-local-etchosts-file-os-x-again).
+[dnsmasq](http://www.echoditto.com/blog/never-touch-your-local-etchosts-file-os-x-again).
 
 ```sh
 # Boot the server
