@@ -35,11 +35,23 @@ after(function() {
 })
 
 describe('client', function() {
+  // NOTE: requires a local *.dev domain to be set up :/
   it('works', function(done) {
-    // NOTE: requires a local *.dev domain to be set up :/
     request('http://target.test.local.dev:9900')
     .get('/')
     .expect('Test-Passed', 'true')
     .expect(200, done)
   })
+  it('throws connection reset error if service unknown', function(done) { 
+    request('http://unknown.test.local.dev:9900')
+    .get('/')
+    .end(function(err){ 
+      if(err && err.code==='ECONNRESET') { 
+        done() 
+      } else { 
+        throw new Error('Connection should have been reset') 
+      } 
+    }) 
+  })
+
 })
