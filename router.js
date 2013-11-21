@@ -66,7 +66,7 @@ function parseHeaders(clients, lookup, socket) {
       }
       log('requesting service', service || '*')
       if (!service) {
-        parser.pipe(mx.createStream(
+        self.pipe(mx.createStream(
           'services'
         )).pipe(through(function(data) {
           var rs = responseStream(socket)
