@@ -44,16 +44,19 @@ module.exports = function(options) {
 
   function getService(req) {
     var service = req.meta.service
+    if(!services[req.meta.service]){
+      log('unknown service', service)
+      return req.end()
+    }
     var port = services[req.meta.service]
-
-    log('service request', service)
+    log('service request', service)    
     var socket = net.connect({port: port})
     socket.on('error', function(error) {
       log('socket error', service, port, error)
-      req.end()
+      return req.end()
     })
 
-    req.pipe(socket).pipe(req)
+    return req.pipe(socket).pipe(req)
   }
 
   function authenticate(id, mx) {
