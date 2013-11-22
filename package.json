@@ -30,10 +30,10 @@
     "mdm-tunnel-server": "./bin/server"
   },
   "devDependencies": {
-    "ecstatic": "~0.4.2",
-    "shoe": "0.0.10",
-    "supertest": "~0.6.0",
-    "mocha": "~1.10.0"
+    "ecstatic": "~0.4.12",
+    "shoe": "0.0.15",
+    "supertest": "~0.8.1",
+    "mocha": "~1.14.0"
   },
   "readmeFilename": "Readme.md",
   "gitHead": "924c9876abb3d8ea3d69b86d69865e0613865ae5",
