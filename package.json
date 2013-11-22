@@ -1,6 +1,6 @@
 {
   "name": "mdm-tunnel",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "Access network services behind a NAT",
   "main": "index.js",
   "engines": {
