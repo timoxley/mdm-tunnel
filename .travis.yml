@@ -7,3 +7,4 @@ node_js:
 addons:
   hosts:
     - target.test.local.dev
+    - unknown.test.local.dev
