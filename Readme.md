@@ -46,7 +46,7 @@ Options:
   -h, --help           output usage information
   -V, --version        output the version number
   -c, --config [file]  Config file to load [file]
-  -u, --user [user]    username to log in to server with
+  -i, --id [id]        id to log in to server with
   -p, --port [port]    port on host server
   -h, --host [host]    address of host server
   -v, --verbose        verbose output
@@ -95,7 +95,7 @@ machine. On OSX, I recommend
 mdm-tunnel-server -v
 
 # Boot the client on your machine
-mdm-tunnel-client -u tim -v
+mdm-tunnel-client -i tim -v
 
 # Boot some service
 node examples/simple/server.js
