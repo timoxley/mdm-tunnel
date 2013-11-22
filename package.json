@@ -16,13 +16,13 @@
   "license": "MIT",
   "dependencies": {
     "through": "~2.3.4",
-    "mux-demux": "~3.6.3",
+    "mux-demux": "~3.7.8",
     "stream-combiner": "0.0.2",
-    "msgpack-stream": "0.0.3",
+    "msgpack-stream": "0.0.12",
     "httppp": "~0.2.1",
-    "debug": "~0.7.2",
-    "reconnect": "~1.2.1",
-    "commander": "~1.1.1",
+    "debug": "~0.7.4",
+    "reconnect": "~1.5.2",
+    "commander": "~2.1.0",
     "response-stream": "0.0.0"
   },
   "bin": {
