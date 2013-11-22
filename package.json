@@ -3,7 +3,9 @@
   "version": "0.1.1",
   "description": "Access network services behind a NAT",
   "main": "index.js",
-  "engines" : { "node" : ">=0.8.0" },
+  "engines": {
+    "node": ">=0.8.0"
+  },
   "scripts": {
     "test": "mocha test",
     "start": "node server.js"
@@ -35,8 +37,6 @@
     "supertest": "~0.8.1",
     "mocha": "~1.14.0"
   },
-  "readmeFilename": "Readme.md",
-  "gitHead": "924c9876abb3d8ea3d69b86d69865e0613865ae5",
   "directories": {
     "example": "example",
     "test": "test"
@@ -51,5 +51,9 @@
   "contributors": [
     "Nexxy <emily@contactvibe.com> (https://github.com/nexxy)",
     "Wei Lu <luwei.here@gmail.com> (https://github.com/weilu)"
-  ]
+  ],
+  "bugs": {
+    "url": "https://github.com/timoxley/mdm-tunnel/issues"
+  },
+  "homepage": "https://github.com/timoxley/mdm-tunnel"
 }
